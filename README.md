@@ -2,7 +2,7 @@
 
 [![Continuous Achievement Automation](https://github.com/zisam-glitch/achievements-nexus/actions/workflows/achievement-automation.yml/badge.svg)](https://github.com/zisam-glitch/achievements-nexus/actions/workflows/achievement-automation.yml)
 [![Pair Extraordinaire](https://img.shields.io/badge/Pair%20Extraordinaire-Gold%20(48%2F48)-ffd700?logo=github&style=flat-square)](https://github.com/zisam-glitch?tab=achievements)
-[![Pull Shark](https://img.shields.io/badge/Pull%20Shark-Silver%20(144%20PRs)-silver?logo=github&style=flat-square)](https://github.com/zisam-glitch?tab=achievements)
+[![Pull Shark](https://img.shields.io/badge/Pull%20Shark-Silver%20(315%20PRs)-silver?logo=github&style=flat-square)](https://github.com/zisam-glitch?tab=achievements)
 
 Production-grade automation suite and milestone synchronization engine for managing open-source contributor metrics, automated multi-tier achievement unlocks, and ecosystem Q&A monitoring.
 

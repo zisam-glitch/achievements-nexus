@@ -96,8 +96,7 @@ def run_single_iteration_safe(iteration_num, max_attempts=3):
             commit_msg = (
                 f"feat(milestone): automated sync #{iteration_num}\n\n"
                 f"Verified milestone event #{iteration_num}.\n\n"
-                f"Co-authored-by: {CO_AUTHOR_1}\n"
-                f"Co-authored-by: {CO_AUTHOR_2}"
+                f"Co-authored-by: {CO_AUTHOR_1}"
             )
             
             api_call(f"{API_BASE}/contents/nexus.log", {
@@ -119,14 +118,8 @@ def run_single_iteration_safe(iteration_num, max_attempts=3):
             # Give GitHub backend 1 second to register mergeability
             time.sleep(1.0)
             
-            # 6. Merge PR
+            # 6. Merge PR (keep branch intact for GitHub achievement indexer)
             api_call(f"{API_BASE}/pulls/{pr_num}/merge", {"merge_method": "merge"}, "PUT")
-            
-            # Clean up branch
-            try:
-                api_call(f"{API_BASE}/git/refs/heads/{branch}", method="DELETE")
-            except Exception:
-                pass
                 
             return pr_num
         except Exception as e:

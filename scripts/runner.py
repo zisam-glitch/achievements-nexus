@@ -10,6 +10,9 @@ import time
 import sys
 import os
 
+REPO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(REPO_DIR)
+
 REPO = "zisam-glitch/achievements-nexus"
 CO_AUTHOR_1 = "projectkaizen-hash <projectkaizen461@gmail.com>"
 CO_AUTHOR_2 = "zisam shaikh <128255158+zisam-glitch@users.noreply.github.com>"

@@ -2,7 +2,7 @@ name: Continuous Achievement Automation
 
 on:
   schedule:
-    # Runs every 6 hours automatically to progress to Pull Shark Gold (1,024 PRs)
+    # Runs every 6 hours automatically for continuous monitoring and public Q&A discovery
     - cron: '0 */6 * * *'
   workflow_dispatch:
     inputs:
@@ -14,6 +14,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  discussions: write
 
 jobs:
   progress-achievements:
@@ -29,21 +30,48 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Run Fast Milestone Batch
+      - name: Maintain Pull Shark Target
         env:
           GITHUB_TOKEN: ${{ secrets.USER_PAT || secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.USER_PAT || secrets.GITHUB_TOKEN }}
         run: |
           BATCH_SIZE=${{ github.event.inputs.batch_size || 50 }}
           python3 -c "
-          import subprocess, json, sys
+          import subprocess, json
           res = subprocess.check_output('gh pr list --repo zisam-glitch/achievements-nexus --state all --limit 2000 --json number', shell=True)
           curr = len(json.loads(res.decode()))
           start = curr + 1
           target = min(1024, curr + int('$BATCH_SIZE'))
-          print(f'Starting batch from {start} to {target} (Target max: 1024)')
-          if start <= 1024:
+          print(f'Current PR count: {curr} | Target: 1024')
+          if curr < 1024:
+              print(f'Starting batch from {start} to {target}...')
               subprocess.run(f'python3 scripts/fast_runner.py {target} {start}', shell=True, check=True)
           else:
-              print('Pull Shark Gold target of 1024 PRs has been reached!')
+              print('Pull Shark Gold target of 1,024 PRs is fully satisfied!')
           "
+
+      - name: Discover Public Q&A Candidates
+        env:
+          GITHUB_TOKEN: ${{ secrets.USER_PAT || secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.USER_PAT || secrets.GITHUB_TOKEN }}
+        run: |
+          python3 scripts/find_qa.py
+
+      - name: Synchronize Milestones & Status
+        env:
+          GITHUB_TOKEN: ${{ secrets.USER_PAT || secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.USER_PAT || secrets.GITHUB_TOKEN }}
+        run: |
+          python3 scripts/sync_milestones.py
+
+      - name: Commit & Push Milestone Updates
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add MILESTONES.md README.md
+          if ! git diff --staged --quiet; then
+            git commit -m "chore(automation): sync achievement milestones & verified metrics [skip ci]"
+            git push
+          else
+            echo "No milestone updates to commit."
+          fi
